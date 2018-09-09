@@ -1,21 +1,21 @@
 /*
  * MIT License
  *
- * Copyright(c) 2018 Phil Badura
+ * Copyright (c) 2018 Phil Badura
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files(the "Software"), to deal
+ * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions :
+ * furnished to do so, subject to the following conditions:
  *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
@@ -26,22 +26,43 @@
 
 #include "base.hpp"
 
-namespace Process
+#include <tlhelp32.h>
+
+enum class Architecture
 {
-	enum class Architecture
-	{
-		Unknown,
-		Intel,
-		Amd64
-	};
+	Unknown,
+	Intel,
+	Amd64
+};
 
-	bool enableDebugPrivilege();
+extern bool enableDebugPrivilege();
 
-	Architecture getExecutableArchitecture();
+extern Architecture getExecutableArchitecture();
 
-	Architecture getSystemArchitecture();
+extern Architecture getSystemArchitecture();
 
-	Architecture getProcessArchitecture(HANDLE hProcess);
+extern Architecture getProcessArchitecture(HANDLE hProcess);
 
-	std::tstring execute(const std::tstring& strCommandLine, LPDWORD lpExitCode = nullptr);
-}
+struct ProcessInfo
+{
+	ProcessInfo(DWORD dwId, const std::tstring& strName, const Architecture& architecture);
+
+	bool operator==(const ProcessInfo& other) const;
+	bool operator!=(const ProcessInfo& other) const;
+
+	bool operator<(const ProcessInfo& other) const;
+	bool operator>(const ProcessInfo& other) const;
+
+	bool operator<=(const ProcessInfo& other) const;
+	bool operator>=(const ProcessInfo& other) const;
+
+	DWORD dwId;
+	std::tstring strName;
+	Architecture architecture;
+};
+
+extern std::vector<ProcessInfo> enumerateProcesses();
+
+extern std::tstring executeCommand(const std::tstring& strCommandLine, LPDWORD lpExitCode = nullptr);
+
+extern bool injectDLL(DWORD dwProcessId, const std::tstring& strPath, const std::tstring& strFunction = TEXT(""), HWND hWnd = nullptr);

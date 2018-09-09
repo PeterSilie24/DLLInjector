@@ -22,48 +22,52 @@
  * SOFTWARE.
  */
 
-#include "base.hpp"
+#include "resource.h"
 
-namespace std
-{
-	#ifdef UNICODE
-	std::wostream& tcout = wcout;
-	#else
-	std::ostream& tcout = cout;
-	#endif
-}
+#include <Windows.h>
 
-std::vector<std::tstring> getArgs()
-{
-	std::vector<std::tstring> args;
+#define APP_TITLE "DLL Injector"
+#define FILE_NAME "dll-injector.exe"
+#define DESCRIPTION "GUI program for DLL injection"
+#define COPYRIGHT "© Phil Badura 2018"
 
-	int iArgc = 0;
+IDI_APP ICON "dll-injector.ico"
 
-	std::shared_ptr<LPWSTR> lpArgv(CommandLineToArgvW(GetCommandLineW(), &iArgc), LocalFree);
+STRINGTABLE
+BEGIN
+	IDS_WND_CLASS_EX "wndClassEx"
+	IDS_APP_TITLE APP_TITLE
+	IDS_FONT_FACE_NAME "Segoe UI"
 
-	if (lpArgv)
-	{
-		for (int i = 0; i < iArgc; i++)
-		{
-			std::wstring arg(lpArgv.get()[i]);
+	IDS_COLUMN_PID "PID"
+	IDS_COLUMN_PLATFORM "Platform"
+	IDS_COLUMN_NAME "Name"
+END
 
-			args.push_back(std::tstring(arg.begin(), arg.end()));
-		}
-	}
-
-	return args;
-}
-
-std::tstring toLowerCase(std::tstring str)
-{
-	std::transform(str.begin(), str.end(), str.begin(), tolower);
-
-	return str;
-}
-
-std::tstring toUpperCase(std::tstring str)
-{
-	std::transform(str.begin(), str.end(), str.begin(), toupper);
-
-	return str;
-}
+VS_VERSION_INFO     VERSIONINFO
+FILEVERSION         1, 0
+PRODUCTVERSION      1, 0
+FILEFLAGSMASK       0x3fL
+FILEFLAGS           0
+FILEOS              VOS_NT_WINDOWS32
+FILETYPE            VFT_APP
+FILESUBTYPE         VFT2_UNKNOWN
+BEGIN
+	BLOCK   "VarFileInfo"
+	BEGIN
+		VALUE   "Translation", 0x409, 1200
+	END
+	BLOCK   "StringFileInfo"
+	BEGIN
+		BLOCK   "040904b0"
+		BEGIN
+			VALUE "FileDescription", DESCRIPTION
+			VALUE "FileVersion", "1.0"
+			VALUE "InternalName", APP_TITLE
+			VALUE "LegalCopyright", COPYRIGHT
+			VALUE "OriginalFilename", FILE_NAME
+			VALUE "ProductName", APP_TITLE
+			VALUE "ProductVersion", "1.0"
+		END
+	END
+END

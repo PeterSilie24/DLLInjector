@@ -14,14 +14,14 @@
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
     <Filter Include="Headerdateien\shared">
-      <UniqueIdentifier>{d271c8db-90b4-439d-893a-e7a763b320e9}</UniqueIdentifier>
+      <UniqueIdentifier>{c29ebb32-e7c2-49ff-877a-a65afc187346}</UniqueIdentifier>
     </Filter>
     <Filter Include="Quelldateien\shared">
-      <UniqueIdentifier>{a4cd7370-03bc-4dc1-9c49-984dfe847f62}</UniqueIdentifier>
+      <UniqueIdentifier>{b18a5c6a-d730-49c8-b38d-78cc40f7cbb5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="inject.cpp">
+    <ClCompile Include="dll-injector.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="..\shared\base.cpp">
@@ -38,9 +38,12 @@
     <ClInclude Include="..\shared\process.hpp">
       <Filter>Headerdateien\shared</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="inject.rc">
+    <ResourceCompile Include="dll-injector.rc">
       <Filter>Ressourcendateien</Filter>
     </ResourceCompile>
   </ItemGroup>

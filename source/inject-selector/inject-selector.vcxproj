@@ -185,6 +185,9 @@ msbuild ../inject.sln /p:Configuration=Release /p:Platform=x64</Command>
     <ClInclude Include="..\shared\base.hpp" />
     <ClInclude Include="..\shared\process.hpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="inject-selector.rc" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

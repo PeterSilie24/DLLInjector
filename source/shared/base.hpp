@@ -1,21 +1,21 @@
 /*
  * MIT License
  *
- * Copyright(c) 2018 Phil Badura
+ * Copyright (c) 2018 Phil Badura
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files(the "Software"), to deal
+ * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions :
+ * furnished to do so, subject to the following conditions:
  *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
@@ -30,11 +30,13 @@
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <functional>
 
 #include <iostream>
 
 #include <vector>
 #include <memory>
+#include <algorithm>
 
 namespace std
 {
@@ -57,66 +59,84 @@ namespace std
 	typedef basic_stringstream<TCHAR>   tstringstream;
 }
 
-namespace Base
+extern std::vector<std::tstring> getArgs();
+
+extern std::tstring toLowerCase(std::tstring str);
+
+extern std::tstring toUpperCase(std::tstring str);
+
+template <typename T>
+T fromStr(const std::tstring& str)
 {
-	std::vector<std::tstring> getArgs();
+	std::tstringstream stream(str);
 
-	template <typename T>
-	T fromStr(const std::tstring& str)
+	T t = T();
+
+	stream >> t;
+
+	return t;
+}
+
+template <typename T>
+std::tstring toStr(const T& t)
+{
+	std::tstringstream stream;
+
+	stream << t;
+
+	return stream.str();
+}
+
+template <typename T>
+class Deleter
+{
+public:
+	Deleter(const T& invalid = T(0)) : invalid(invalid)
 	{
-		std::tstringstream stream(str);
 
-		T t = T();
-
-		stream >> t;
-
-		return t;
 	}
 
-	template <typename T>
-	std::tstring toStr(const T& t)
+	template <typename DeleteFunctor>
+	Deleter(const T& t, DeleteFunctor deleteFunctor, const T& invalid = T(0)) : invalid(invalid)
 	{
-		std::tstringstream stream;
-
-		stream << t;
-
-		return stream.str();
-	}
-
-	template <typename THandle>
-	class Handle : public std::shared_ptr<THandle>
-	{
-	public:
-		Handle()
+		if (t != invalid)
 		{
+			T* pT = new T(t);
 
-		}
-
-		template <typename Deleter>
-		Handle(const THandle& handle, Deleter deleter)
-			: std::shared_ptr<THandle>([=]()
-		{
-			if (handle)
+			std::function<void(T*)> deleter([=](T* pT)
 			{
-				return new THandle(handle);
-			}
-
-			return reinterpret_cast<THandle*>(nullptr);
-		} (),
-			[=](THandle* pHandle)
-		{
-			if (pHandle)
-			{
-				if (*pHandle)
+				if (pT)
 				{
-					deleter(*pHandle);
+					if (*pT != invalid)
+					{
+						deleteFunctor(*pT);
+					}
 				}
 
-				delete pHandle;
-			}
-		})
-		{
+				delete pT;
+			});
 
+			this->t = std::shared_ptr<T>(pT, deleter);
 		}
-	};
-}
+	}
+
+	operator T () const
+	{
+		if (this->t)
+		{
+			return *this->t;
+		}
+
+		return this->invalid;
+	}
+
+	void release()
+	{
+		this->t.reset();
+	}
+
+private:
+	std::shared_ptr<T> t;
+
+	T invalid;
+};

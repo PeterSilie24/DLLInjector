@@ -22,48 +22,12 @@
  * SOFTWARE.
  */
 
-#include "base.hpp"
+#define IDI_APP 100
 
-namespace std
-{
-	#ifdef UNICODE
-	std::wostream& tcout = wcout;
-	#else
-	std::ostream& tcout = cout;
-	#endif
-}
+#define IDS_WND_CLASS_EX 100
+#define IDS_APP_TITLE 101
+#define IDS_FONT_FACE_NAME 102
 
-std::vector<std::tstring> getArgs()
-{
-	std::vector<std::tstring> args;
-
-	int iArgc = 0;
-
-	std::shared_ptr<LPWSTR> lpArgv(CommandLineToArgvW(GetCommandLineW(), &iArgc), LocalFree);
-
-	if (lpArgv)
-	{
-		for (int i = 0; i < iArgc; i++)
-		{
-			std::wstring arg(lpArgv.get()[i]);
-
-			args.push_back(std::tstring(arg.begin(), arg.end()));
-		}
-	}
-
-	return args;
-}
-
-std::tstring toLowerCase(std::tstring str)
-{
-	std::transform(str.begin(), str.end(), str.begin(), tolower);
-
-	return str;
-}
-
-std::tstring toUpperCase(std::tstring str)
-{
-	std::transform(str.begin(), str.end(), str.begin(), toupper);
-
-	return str;
-}
+#define IDS_COLUMN_PID 103
+#define IDS_COLUMN_PLATFORM 104
+#define IDS_COLUMN_NAME 105
